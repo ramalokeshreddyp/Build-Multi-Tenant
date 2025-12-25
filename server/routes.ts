@@ -2,10 +2,12 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { api, errorSchemas } from "@shared/routes";
-import { UserRole, SubscriptionPlan } from "@shared/schema";
+import { UserRole, SubscriptionPlan, tenants, users, projects, tasks, auditLogs } from "@shared/schema";
 import { z } from "zod";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import { db } from "./db";
+import { sql } from "drizzle-orm";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-change-in-production";
 
@@ -69,6 +71,16 @@ export async function registerRoutes(
         fullName: input.adminName,
         role: UserRole.TENANT_ADMIN,
         isActive: true
+      });
+
+      // Log action
+      await storage.createAuditLog({
+        tenantId: tenant.id,
+        userId: user.id,
+        action: 'REGISTER_TENANT',
+        entityType: 'tenant',
+        entityId: tenant.id,
+        ipAddress: req.ip
       });
 
       const token = jwt.sign({ id: user.id, tenantId: tenant.id, role: user.role }, JWT_SECRET, { expiresIn: '24h' });
@@ -171,6 +183,16 @@ export async function registerRoutes(
         passwordHash: hashedPassword,
         tenantId: req.user.tenantId,
       });
+
+      await storage.createAuditLog({
+        tenantId: req.user.tenantId,
+        userId: req.user.id,
+        action: 'CREATE_USER',
+        entityType: 'user',
+        entityId: user.id,
+        ipAddress: req.ip
+      });
+
       res.status(201).json(user);
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -201,6 +223,16 @@ export async function registerRoutes(
         tenantId: req.user.tenantId,
         createdBy: req.user.id
       });
+
+      await storage.createAuditLog({
+        tenantId: req.user.tenantId,
+        userId: req.user.id,
+        action: 'CREATE_PROJECT',
+        entityType: 'project',
+        entityId: project.id,
+        ipAddress: req.ip
+      });
+
       res.status(201).json(project);
     } catch (err) {
       res.status(500).json({ message: "Error creating project" });
@@ -235,6 +267,16 @@ export async function registerRoutes(
         ...input,
         tenantId: req.user.tenantId
       });
+
+      await storage.createAuditLog({
+        tenantId: req.user.tenantId,
+        userId: req.user.id,
+        action: 'CREATE_TASK',
+        entityType: 'task',
+        entityId: task.id,
+        ipAddress: req.ip
+      });
+
       res.status(201).json(task);
     } catch (err) {
       res.status(500).json({ message: "Error creating task" });
@@ -255,9 +297,13 @@ export async function registerRoutes(
     }
   });
 
-  // Health Check
-  app.get(api.health.check.path, (req, res) => {
-    res.json({ status: "ok", database: "connected" });
+  app.get(api.health.check.path, async (req, res) => {
+    try {
+      await db.execute(sql`SELECT 1`);
+      res.json({ status: "ok", database: "connected" });
+    } catch (err) {
+      res.status(500).json({ status: "error", database: "disconnected" });
+    }
   });
 
   // SEED DATA on startup
