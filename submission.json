@@ -1,0 +1,18 @@
+{
+  "testCredentials": {
+    "super_admin": {
+      "email": "superadmin@platform.com",
+      "password": "supersecret"
+    },
+    "tenant_admin": {
+      "email": "admin@acme.com",
+      "password": "admin123",
+      "subdomain": "acme"
+    },
+    "user": {
+      "email": "user@acme.com",
+      "password": "user123",
+      "subdomain": "acme"
+    }
+  }
+}
