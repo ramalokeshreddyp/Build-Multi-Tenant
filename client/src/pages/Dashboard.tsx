@@ -2,7 +2,7 @@ import { Layout } from "@/components/Layout";
 import { useAuth } from "@/hooks/use-auth";
 import { useProjects } from "@/hooks/use-projects";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Activity, Clock, FolderKanban, CheckCircle2 } from "lucide-react";
+import { Activity, Clock, FolderKanban, CheckCircle2, Users } from "lucide-react";
 import { Link } from "wouter";
 import { format } from "date-fns";
 
