@@ -3,7 +3,6 @@ version: '3.8'
 services:
   database:
     image: postgres:15-alpine
-    container_name: database
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgrespassword
@@ -19,24 +18,23 @@ services:
       retries: 5
 
   backend:
-    build: .
-    container_name: backend
+    build:
+      context: .
     depends_on:
       database:
         condition: service_healthy
     ports:
       - "5000:5000"
     environment:
-      - DATABASE_URL=postgres://postgres:postgrespassword@database:5432/saas_db
-      - JWT_SECRET=docker-secret-key
-      - PORT=5000
-    command: sh -c "npm run db:push && node dist/index.js"
+      DATABASE_URL: postgres://postgres:postgrespassword@database:5432/saas_db
+      JWT_SECRET: docker-secret-key
+      PORT: 5000
+    command: sh -c "npm run db:migrate && npm run start"
 
   frontend:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile.frontend
-    container_name: frontend
     ports:
       - "3000:80"
     depends_on:
