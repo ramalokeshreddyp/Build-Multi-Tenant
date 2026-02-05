@@ -29,10 +29,6 @@ This is a production-ready, multi-tenant SaaS application with project and task 
 4.  Access Backend at `http://localhost:5000`.
 
 
-## Documentation
-- API routes are defined in `shared/routes.ts`.
-- Schema is defined in `shared/schema.ts`.
-
 
 ## Test Credentials
 See `submission.json` for login credentials.
@@ -40,6 +36,12 @@ See `submission.json` for login credentials.
 - **Super Admin**: superadmin@platform.com / supersecret
 - **Tenant Admin**: admin@acme.com / admin123 (Subdomain: acme)
 - **User**: user@acme.com / user123 (Subdomain: acme)
+
+- 
+## Documentation
+- API routes are defined in `shared/routes.ts`.
+- Schema is defined in `shared/schema.ts`.
+
 
 ## Documentation
 - API routes are defined in `shared/routes.ts`.
