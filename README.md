@@ -42,7 +42,3 @@ See `submission.json` for login credentials.
 - API routes are defined in `shared/routes.ts`.
 - Schema is defined in `shared/schema.ts`.
 
-
-## Documentation
-- API routes are defined in `shared/routes.ts`.
-- Schema is defined in `shared/schema.ts`.
