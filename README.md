@@ -28,6 +28,9 @@ This is a production-ready, multi-tenant SaaS application with project and task 
 3.  Access Frontend at `http://localhost:3000`.
 4.  Access Backend at `http://localhost:5000`.
 
+## Documentation
+- API routes are defined in `shared/routes.ts`.
+- Schema is defined in `shared/schema.ts`.
 
 
 ## Test Credentials
